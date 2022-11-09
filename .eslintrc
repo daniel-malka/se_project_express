@@ -1,8 +1,6 @@
 {
-  "extends": "airbnb-base",
+  "extends": ["airbnb-base", "prettier"],
   "rules": {
-    "quotes": 0,
-    "implicit-arrow-linebreak": 0,
     "no-underscore-dangle": ["off", { "allow": ["id"] }]
   }
 }

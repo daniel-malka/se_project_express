@@ -6,7 +6,7 @@ const dataPath = path.join(__dirname, "..", "data", "users.json");
 const getUsers = (req, res) => {
   getDataFromFile(dataPath)
     .then((users) => res.status(200).send(users))
-    .catch((err) => res.status(500).send(err));
+    .catch(() => res.status(500).send({ message: "An error occurred" }));
 };
 
 const getUserId = (req, res) => {

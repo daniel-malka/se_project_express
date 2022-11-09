@@ -8,9 +8,9 @@ const usersRouter = require("./routes/users");
 const cardsRouter = require("./routes/cards");
 
 app.use("/users", usersRouter);
-app.use("/card", cardsRouter);
+app.use("/cards", cardsRouter);
 
-app.get("*", (req, res) => {
+app.use("*", (req, res) => {
   res.status(404).send({ message: "Requested resource not found" });
 });
 
