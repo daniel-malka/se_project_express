@@ -11,7 +11,7 @@ const getUsers = (req, res) => {
 
 const getUserId = (req, res) => {
   getDataFromFile(dataPath)
-    .then((users) => users.find((user) => user._id === req.params.user_id))
+    .then((users) => users.find((user) => user._id === req.params.id))
     .then((user) => {
       if (!user) {
         res.status(404).send({ message: "User ID not found" });
