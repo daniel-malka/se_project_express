@@ -9,7 +9,7 @@ const getCards = (req, res) => {
 const createCard = (req, res) => {
   const { name, link, owner /*, likes */ } = req.body;
   CardSchema.create({ name, link, owner /*, likes */ })
-    .then((card) => res.status(200).send({ data: card }))
+    .then((card) => res.status(200).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         const errors = err.errors;
@@ -32,9 +32,7 @@ const deleteCard = (req, res) => {
       error.statusCode = 404;
       throw error;
     })
-    .then((card) =>
-      CardSchema.deleteOne(card).then(() => res.send({ data: card }))
-    )
+    .then((card) => CardSchema.deleteOne(card).then(() => res.send(card)))
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Invalid card id' });
@@ -59,7 +57,7 @@ const updateLike = (req, res, operator) => {
       throw error;
     })
     .then((card) => {
-      res.send({ data: card });
+      res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {

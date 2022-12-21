@@ -15,7 +15,7 @@ const userSchema = new Schema(
       maxlength: 30,
       required: true,
     },
-    avater: {
+    avatar: {
       type: String,
       required: true,
       validate: {
