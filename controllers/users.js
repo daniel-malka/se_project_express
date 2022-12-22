@@ -6,20 +6,20 @@ const createUser = (req, res) => {
     .then((user) => res.status(201).send({ data: user }))
     .catch((err) => {
       if (err.name === 'Validation Error') {
-        const errors = err.errors;
+        const { errors } = err;
         const message = `${Object.values(errors)
           .map((error) => error.message)
           .join(', ')}`;
-        res.status(400).send({ message: message });
+        res.status(400).send(message);
       } else {
         res.status(500).send({ message: 'somthing went wrong..' });
       }
     });
 };
 const updateUserData = (req, res) => {
-  const body = req.body;
+  const { body } = req;
   const id = req.user._id;
-  UserSchima.findByIdAndUpdate(id, body, { new: true })
+  UserSchima.findByIdAndUpdate(id, body, { new: true, runValidators: true })
     .orFail(() => {
       const error = new Error(`User with this id (${id}) was not found`);
       error.status = 404;
@@ -27,7 +27,7 @@ const updateUserData = (req, res) => {
     })
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'ValidationError') {
         res.status(400).send({ message: `the user id (${id}) is not correct` });
       } else if (res.status === 404) {
         res.status(404).send({ message: err.message });
@@ -44,8 +44,9 @@ const updateUserInfo = (req, res) => {
     return res.status(400).send({ message: 'name and about cant be empty' });
   }
 
-  updateUserData(req, res);
+  return updateUserData(req, res);
 };
+
 const updateUserAvatar = (req, res) => {
   const { avatar } = req.body;
 
@@ -53,7 +54,7 @@ const updateUserAvatar = (req, res) => {
     return res.status(400).send({ message: 'avatar cant be empty' });
   }
 
-  updateUserData(req, res);
+  return updateUserData(req, res);
 };
 
 const getUsers = (req, res) => {

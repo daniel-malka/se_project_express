@@ -7,12 +7,12 @@ const getCards = (req, res) => {
 };
 
 const createCard = (req, res) => {
-  const { name, link, owner /*, likes */ } = req.body;
-  CardSchema.create({ name, link, owner /*, likes */ })
+  const { name, link, owner } = req.body;
+  CardSchema.create({ name, link, owner })
     .then((card) => res.status(200).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        const errors = err.errors;
+        const { errors } = err;
         res.status(400).send({
           message: `${Object.values(errors)
             .map((error) => error.message)
@@ -60,8 +60,10 @@ const updateLike = (req, res, operator) => {
       res.send(card);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.statusCode === 404) {
         res.status(400).send({ message: 'invalid card id' });
+      } else if (err.statusCode === 500) {
+        res.status(500).send({ message: 'somthing went wrong' });
       }
     });
 };
