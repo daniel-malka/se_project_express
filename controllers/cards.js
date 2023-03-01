@@ -1,5 +1,9 @@
 const CardSchema = require('../models/card');
-
+const throwingErr = (statusCode, message) => {
+  const error = new Error(message);
+  error.status = statusCode;
+  throw error;
+};
 const getCards = (req, res) => {
   CardSchema.find({})
     .then((cards) => res.status(200).send(cards))
@@ -27,11 +31,7 @@ const createCard = (req, res) => {
 const deleteCard = (req, res) => {
   const { id } = req.params;
   CardSchema.findById(id)
-    .orFail(() => {
-      const error = new Error('No card was found with this id');
-      error.statusCode = 404;
-      throw error;
-    })
+    .orFail(throwingErr(404, 'No card was found with this id'))
     .then((card) => CardSchema.deleteOne(card).then(() => res.send(card)))
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -51,11 +51,7 @@ const updateLike = (req, res, operator) => {
     { [operator]: { likes: req.user._id } },
     { new: true }
   )
-    .orFail(() => {
-      const error = new Error(`no card found with this id (${id})`);
-      error.statusCode = 404;
-      throw error;
-    })
+    .orFail((404, `no card found with this id (${id})`))
     .then((card) => {
       res.send(card);
     })

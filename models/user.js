@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const { Schema } = mongoose;
+const { Schema, model } = mongoose;
 
 const { urlRegex } = require('../utils/regex');
 
@@ -29,4 +29,4 @@ const userSchema = new Schema(
   },
   { versionKey: false }
 );
-module.exports = mongoose.model('user', userSchema);
+module.exports = model('user', userSchema);
