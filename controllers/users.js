@@ -22,10 +22,17 @@ const createUser = (req, res) => {
     });
 };
 const updateUserData = (req, res) => {
-  const { body } = req;
   const { _id } = req.user;
-  UserSchima.findByIdAndUpdate(_id, body, { new: true, runValidators: true })
-    .orFail(throwingErr(404, `User with this id (${id}) was not found`))
+  const { name, about, avatar } = req.body;
+
+  UserSchima.findByIdAndUpdate(
+    _id,
+    { $set: { name, about, avatar } },
+
+    { new: true, runValidators: true }
+  )
+    .orFail(throwingErr(404, `User with this id (${_id}) was not found`))
+
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
