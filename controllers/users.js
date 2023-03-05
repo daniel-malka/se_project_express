@@ -1,10 +1,5 @@
 const UserSchima = require('../models/user');
 
-const throwingErr = (statusCode, message) => {
-  const error = new Error(message);
-  error.status = statusCode;
-  throw error;
-};
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   UserSchima.create({ name, about, avatar })
@@ -31,12 +26,17 @@ const updateUserData = (req, res) => {
 
     { new: true, runValidators: true }
   )
-    .orFail(throwingErr(404, `User with this id (${_id}) was not found`))
-
+    .orFail(() => {
+      const error = new Error(`User with this id (${_id}) was not found`);
+      error.status = 404;
+      throw error;
+    })
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: `the user id (${id}) is not correct` });
+        res
+          .status(400)
+          .send({ message: `the user id (${_id}) is not correct` });
       } else if (res.status === 404) {
         res.status(404).send({ message: err.message });
       } else {
@@ -53,7 +53,6 @@ const updateUserInfo = (req, res) => {
   }
 
   updateUserData(req, res);
-  next();
 };
 
 const updateUserAvatar = (req, res) => {
@@ -64,7 +63,6 @@ const updateUserAvatar = (req, res) => {
   }
 
   updateUserData(req, res);
-  next();
 };
 
 const getUsers = (req, res) => {
@@ -76,28 +74,14 @@ const getUsers = (req, res) => {
         .send({ message: 'An error has occured.. please try again later' })
     );
 };
-const getUser = (req, res) => {
-  const { id } = req.params;
-  UserSchima.findById(id)
-    .orFail(throwingErr(404, 'User id was not found'))
-    .then((user) => {
-      res.status(200).send({ data: user });
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(400).send('Invalid format');
-      } else if (err.status === 404) {
-        res.status(404).send({ message: err.message });
-      } else {
-        res.status(500).send({ message: err.message });
-      }
-    });
-};
-
 const getUserId = (req, res) => {
   const { id } = req.params;
   UserSchima.findById(id)
-    .orFail(throwingErr(404, 'No user found with this Id'))
+    .orFail(() => {
+      const error = new Error('No user found with this Id');
+      error.status = 404;
+      throw error;
+    })
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -115,6 +99,5 @@ module.exports = {
   updateUserInfo,
   updateUserAvatar,
   getUsers,
-  getUser,
   getUserId,
 };
